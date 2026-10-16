@@ -1,6 +1,6 @@
 # Design notes - LabelConflict
 
-Status: local contract validated with the GenVM linter and Direct Mode tests. No deployment or production behavior is claimed. This file is a scope and threat-model note, not onchain evidence.
+Status: local GenVM checks and Direct Mode tests passed. A Studionet deployment and two live review paths are documented in [DEPLOY.md](DEPLOY.md). These are hosted-development results, not production behavior or food-safety evidence.
 
 ## Problem
 
