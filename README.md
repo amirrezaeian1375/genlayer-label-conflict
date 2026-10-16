@@ -2,7 +2,7 @@
 
 A product listing can say "free from milk" while its public ingredient record lists milk. LabelConflict checks that specific mismatch. It is a standalone GenLayer contract that records source-bound observations other builders can read; it is not a food-safety app.
 
-**Current status:** source linted and type-checked; 43 Direct Mode tests passed with mocked web and model responses. **Not deployed. No live GenLayer consensus result yet.**
+**Current status:** deployed and exercised on GenLayer Studionet (chain 61999). Five transactions finalized with successful GenVM execution and accepted consensus. Local checks: GenVM lint and type checking passed; 43 Direct Mode tests passed with mocked web and model responses.
 
 ## One question, five outcomes
 
@@ -40,11 +40,21 @@ Install Python 3.12+ and, from the repository root, run these commands in order:
 
 On Windows, activate the virtual environment and use its `python` and `genvm-lint` commands. The preparation script works around an upstream release-asset naming mismatch in `genlayer-test==0.29.2`; it changes no contract source. Direct Mode tests mock the web and LLM. They cover bad input, contradictions, traces, outages, malformed data, quote validation, repeated reviews and validators rejecting forged or divergent results. **They are not a distributed-network test.**
 
-## Live evidence still needed
+## Live Studionet record
 
-The exact contract file is `contracts/label_conflict.py`. Deploy it on GenLayer Studionet, wait for successful finalization, then run both a positive and a negative/control case against the live source. Record the address, source hash and separate transaction links. See [docs/DEPLOY.md](docs/DEPLOY.md) for the exact calls and an evidence checklist. Do not report local mocks as onchain results.
+Contract: [`0x1Dd826F32a12A1483cBf812e28738E3dacFdfA72`](https://explorer-studio.genlayer.com/address/0x1Dd826F32a12A1483cBf812e28738E3dacFdfA72). Deployer: `0x3d9E39265d74511065f88C987f898c1d02892f3e`. These are hosted-development results, not mainnet or production claims.
 
-Example GTINs to *re-check at demo time*: `3017620422003` with `milk` has historically had a milk tag; `5449000000996` with `milk` can exercise the ingredient-text path. The underlying records can change.
+| Step | Explorer transaction | Finalized result |
+| --- | --- | --- |
+| Deploy | [`0xd95cabbf...018be016`](https://explorer-studio.genlayer.com/tx/0xd95cabbf553bd5ca332965f3a68c05e4306fc92c2112e7c8918e483a018be016) | GenVM `SUCCESS` |
+| Open `3017620422003:milk` | [`0x096f6d5b...12168fb9`](https://explorer-studio.genlayer.com/tx/0x096f6d5b5f8de2f95a63a846388ea95d24f0c2dd6a2d464c0d3dcc4212168fb9) | Case opened |
+| Review first case | [`0xc2c7c142...13d38e09`](https://explorer-studio.genlayer.com/tx/0xc2c7c142197d87926a3d2c03b985ed7a311e1f80e80183fee778b06513d38e09) | `CONFLICT` / `DECLARED_TAG` / `en:milk` |
+| Open `5449000000996:milk` | [`0xc7f9f749...83906aec`](https://explorer-studio.genlayer.com/tx/0xc7f9f749487784653cfc4ab930a98572254f6a326a5c08db2aeabd1c83906aec) | Case opened |
+| Review second case | [`0xc94ea9bc...7308cc81`](https://explorer-studio.genlayer.com/tx/0xc94ea9bc5584b247388fc19f95c800170d4cfe04b37586dda0302fb07308cc81) | `NO_CONFLICT_FOUND` / `NO_MENTION` via ingredient text |
+
+Both `get_case` reads were checked against **Finalized** state in Studio: first case `ever_conflicted=true`, second case `ever_conflicted=false`, and each had one stored observation. The source-projection hashes from both review receipts were reproduced from the respective live Open Food Facts API records after finalization. The public data may change later.
+
+**Source parity:** `gen_getContractCode` returned the deployed Python source. Its raw SHA-256 differs from the GitHub file because Studio stored CRLF line endings and omitted the final newline. After normalizing only those line endings, the source text matches `contracts/label_conflict.py`; this is **normalized text parity, not byte-for-byte parity**. The observed hashes and reproduction notes are in [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Limits and attribution
 
