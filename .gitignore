@@ -1,0 +1,10 @@
+.venv/
+.env
+*.key
+*.pem
+__pycache__/
+.pytest_cache/
+artifacts/
+*.pyc
+.idea/
+.vscode/
